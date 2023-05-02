@@ -1,27 +1,38 @@
 import {Component, OnInit} from '@angular/core';
-import { PostService } from './services/post.service';
-import {Plant} from "./models/plant";
+import { PostService } from '../services/post.service';
+import {Plant} from "../models/plant";
 import {Observable} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {KeycloakService} from "keycloak-angular";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'search-root',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.css']
 })
 
-export class AppComponent implements OnInit {
+export class SearchComponent implements OnInit {
   plants: any = {};
   responseMessage: string = '';
   searchText : string = "";
+  title: any;
+  id: string = '';
 
-  constructor(private service:PostService) {}
+  favorites: any = {};
+
+  constructor(private service:PostService, private keycloakService: KeycloakService) {}
 
   ngOnInit() {
     this.service.getPlants()
       .subscribe(response => {
         this.plants = response;
       });
+    this.keycloakService.loadUserProfile().then(profile => {
+      // @ts-ignore
+      this.id = profile.id;
+    }).catch(error => {
+      console.error('Failed to load user profile', error);
+    });
   }
 
   addPlantForm = new FormGroup({
@@ -35,15 +46,9 @@ export class AppComponent implements OnInit {
     image_url: new FormControl('', [Validators.required]),
   });
 
-  addPlant() {
-    const plant: Plant = this.addPlantForm.value as Plant;
-    this.service.addPlant(plant).subscribe((response: any) => {
-      console.log(response);
-      this.responseMessage = 'Musique ajoutée avec succès !'; // Mise à jour de la réponse
-    }, error => {
-      console.log(error);
-      this.responseMessage = 'Erreur lors de l\'ajout de la musique'; // Gestion des erreurs
-    });
+  setFavorite(plant_id: number, user_id: String) {
+    this.service.setFavorite(plant_id, user_id);
+    location.reload();
   }
 
   searchPlant() {
@@ -59,4 +64,5 @@ export class AppComponent implements OnInit {
         });
     }
   }
+
 }

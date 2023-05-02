@@ -1,0 +1,32 @@
+<form>
+  <input class="form-control-lg" [(ngModel)]="searchText" name="searchText">
+  <button class="btn btn-info" (click)="searchPlant()" type="submit">
+    Rechercher
+  </button>
+</form>
+<table class="table table-hover">
+  <thead>
+  <tr>
+    <th scope="col">Image</th>
+    <th scope="col">Id</th>
+    <th scope="col">Common name</th>
+    <th scope="col">Scientific name</th>
+    <th scope="col">Year</th>
+    <th scope="col">Genus</th>
+    <th scope="col">Family</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let plant of plants">
+    <td><img style="width: 3em;" src="{{ plant.image_url }}"></td>
+    <td>{{ plant.id }}</td>
+    <td>{{ plant.common_name }}</td>
+    <td>{{ plant.scientific_name }}</td>
+    <td>{{ plant.year }}</td>
+    <td>{{ plant.genus }}</td>
+    <td>{{ plant.family }}</td>
+    <td><button class="btn btn-success"(click)="setFavorite(plant.id, id )" mat-raised-button type="submit">Ajouter aux favoris</button></td>
+  </tr>
+  </tbody>
+</table>
